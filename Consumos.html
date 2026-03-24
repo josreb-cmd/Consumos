@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculadora de Consumos</title>
+
+  <style>
+    :root {
+      --azul-metalico: #1a3c57;
+      --azul-brilho: #2a6fa1;
+      --cinza-claro: #eef1f4;
+      --cinza-medio: #c7ccd1;
+      --cinza-escuro: #4a4f55;
+      --branco: #ffffff;
+    }
+
+    body {
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--cinza-claro);
+      margin: 0;
+      padding: 30px;
+      color: var(--cinza-escuro);
+    }
+
+    h1 {
+      color: var(--azul-metalico);
+      font-weight: 600;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    /* --- CARDS --- */
+    .card {
+      background: var(--branco);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      border: 1px solid var(--cinza-medio);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--azul-metalico);
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    /* --- GRID FORM --- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: var(--azul-metalico);
+      font-weight: 500;
+    }
+
+    input, select {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--cinza-medio);
+      background: #fdfdfd;
+      font-size: 0.95rem;
+      transition: 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--azul-brilho);
+      box-shadow: 0 0 0 2px rgba(42,111,161,0.25);
+    }
+
+    /* --- BUTTONS --- */
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 12px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--azul-brilho);
+      color: var(--branco);
+    }
+    .btn-primary:hover {
+      background: #1f5c85;
+    }
+
+    .btn-secondary {
+      background: var(--cinza-medio);
+      color: var(--azul-metalico);
+    }
+    .btn-secondary:hover {
+      background: #b5bbc1;
+    }
+
+    .btn-danger {
+      background: #b33a3a;
+      color: var(--branco);
+    }
+    .btn-danger:hover {
+      background: #962f2f;
+    }
+
+    /* --- RESULTADOS CARD --- */
+    .results p {
+      margin: 6px 0;
+      font-size: 0.95rem;
+    }
+
+    .value {
+      font-weight: 600;
+      color: var(--azul-metalico);
+    }
+
+    /* --- TABELA --- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--cinza-medio);
+      text-align: center;
+    }
+
+    th {
+      background: var(--cinza-claro);
+      color: var(--azul-metalico);
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f4f6f8;
+    }
+
+    @media (max-width: 600px) {
+      .actions {
+        flex-direction: column;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Dashboard de Consumos Automóvel</h1>
+
+  <!-- CARD 1: NOVO REGISTO -->
+  <div class="card">
+    <h2>Novo Registo</h2>
+
+    <div class="grid">
+      <div class="field">
+        <label>Data</label>
+        <input type="date" id="data" />
+      </div>
+
+      <div class="field">
+        <label>Descrição / Trajeto</label>
+        <input type="text" id="descricao" placeholder="Ex.: Casa - Trabalho" />
+      </div>
+
+      <div class="field">
+        <label>Km percorridos</label>
+        <input type="number" id="km" step="0.1" placeholder="Ex.: 150" />
+      </div>
+
+      <div class="field">
+        <label>Litros consumidos</label>
+        <input type="number" id="litros" step="0.01" placeholder="Ex.: 10.5" />
+      </div>
+
+      <div class="field">
+        <label>Preço por litro</label>
+        <input type="number" id="precoLitro" step="0.001" placeholder="Ex.: 1.789" />
+      </div>
+
+      <div class="field">
+        <label>Moeda</label>
+        <select id="moeda">
+          <option value="€">Euro (€)</option>
+          <option value="$">Dólar ($)</option>
+          <option value="£">Libra (£)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="btnCalcular">Calcular e Guardar</button>
+      <button class="btn-secondary" id="btnLimparForm">Limpar</button>
+    </div>
+  </div>
+
+  <!-- CARD 2: RESULTADOS -->
+  <div class="card" id="cardResultados" style="display:none;">
+    <h2>Resultados do Registo</h2>
+
+    <p>Consumo médio: <span class="value" id="resConsumo"></span> L/100 km</p>
+    <p>Custo total: <span class="value" id="resCustoTotal"></span></p>
+    <p>Custo por km: <span class="value" id="resCustoKm"></span></p>
+  </div>
+
+  <!-- CARD 3: HISTÓRICO -->
+  <div class="card">
+    <h2>Histórico de Registos</h2>
+    <p id="resumoHistorico" style="opacity:0.8;"></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Descrição</th>
+          <th>Km</th>
+          <th>Litros</th>
+          <th>Consumo</th>
+          <th>Custo total</th>
+          <th>Custo/km</th>
+        </tr>
+      </thead>
+      <tbody id="historicoBody"></tbody>
+    </table>
+
+    <div class="actions" style="margin-top:20px;">
+      <button class="btn-danger" id="btnLimparHistorico">Apagar Histórico</button>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "historicoConsumosAuto";
+
+    const dataInput = document.getElementById("data");
+    const descricaoInput = document.getElementById("descricao");
+    const kmInput = document.getElementById("km");
+    const litrosInput = document.getElementById("litros");
+    const precoLitroInput = document.getElementById("precoLitro");
+    const moedaSelect = document.getElementById("moeda");
+
+    const btnCalcular = document.getElementById("btnCalcular");
+    const btnLimparForm = document.getElementById("btnLimparForm");
+    const btnLimparHistorico = document.getElementById("btnLimparHistorico");
+
+    const cardResultados = document.getElementById("cardResultados");
+    const resConsumo = document.getElementById("resConsumo");
+    const resCustoTotal = document.getElementById("resCustoTotal");
+    const resCustoKm = document.getElementById("resCustoKm");
+
+    const historicoBody = document.getElementById("historicoBody");
+    const resumoHistorico = document.getElementById("resumoHistorico");
+
+    (function setHoje() {
+      const hoje = new Date();
+      const yyyy = hoje.getFullYear();
+      const mm = String(hoje.getMonth() + 1).padStart(2, "0");
+      const dd = String(hoje.getDate()).padStart(2, "0");
+      dataInput.value = `${yyyy}-${mm}-${dd}`;
+    })();
+
+    function carregarHistorico() {
+      const dados = localStorage.getItem(STORAGE_KEY);
+      if (!dados) return [];
+      try { return JSON.parse(dados); } catch { return []; }
+    }
+
+    function guardarHistorico(lista) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
+    }
+
+    function atualizarTabela() {
+      const historico = carregarHistorico();
+      historicoBody.innerHTML = "";
+
+      let totalKm = 0, totalLitros = 0, totalCusto = 0;
+
+      historico.forEach(reg => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${reg.data}</td>
+          <td>${reg.descricao}</td>
+          <td>${reg.km.toFixed(1)}</td>
+          <td>${reg.litros.toFixed(2)}</td>
+          <td>${reg.consumoMedio.toFixed(2)}</td>
+          <td>${reg.moeda} ${reg.custoTotal.toFixed(2)}</td>
+          <td>${reg.moeda} ${reg.custoPorKm.toFixed(3)}</td>
+        `;
+        historicoBody.appendChild(tr);
+
+        totalKm += reg.km;
+        totalLitros += reg.litros;
+        totalCusto += reg.custoTotal;
+      });
+
+      if (historico.length > 0) {
+        const consumoGlobal = (totalLitros / totalKm) * 100;
+        const custoMedioKm = totalCusto / totalKm;
+        const moeda = historico[0].moeda;
+
+        resumoHistorico.textContent =
+          `Registos: ${historico.length} | Km: ${totalKm.toFixed(1)} | ` +
+          `Consumo médio global: ${consumoGlobal.toFixed(2)} L/100km | ` +
+          `Custo médio: ${moeda} ${custoMedioKm.toFixed(3)}/km`;
+      } else {
+        resumoHistorico.textContent = "Sem registos.";
+      }
+    }
+
+    btnCalcular.addEventListener("click", () => {
+      const data = dataInput.value;
+      const descricao = descricaoInput.value.trim();
+      const km = parseFloat(kmInput.value);
+      const litros = parseFloat(litrosInput.value);
+      const precoLitro = parseFloat(precoLitroInput.value);
+      const moeda = moedaSelect.value;
+
+      if (!km || !litros || !precoLitro || km <= 0 || litros <= 0 || precoLitro <= 0) {
+        alert("Preenche Km, Litros e Preço por litro com valores válidos.");
+        return;
+      }
+
+      const consumoMedio = (litros / km) * 100;
+      const custoTotal = litros * precoLitro;
+      const custoPorKm = custoTotal / km;
+
+      resConsumo.textContent = consumoMedio.toFixed(2);
+      resCustoTotal.textContent = `${moeda} ${custoTotal.toFixed(2)}`;
+      resCustoKm.textContent = `${moeda} ${custoPorKm.toFixed(3)}`;
+      cardResultados.style.display = "block";
+
+      const historico = carregarHistorico();
+      historico.push({
+        data, descricao, km, litros, precoLitro,
+        consumoMedio, custoTotal, custoPorKm, moeda
+      });
+
+      guardarHistorico(historico);
+      atualizarTabela();
+    });
+
+    btnLimparForm.addEventListener("click", () => {
+      descricaoInput.value = "";
+      kmInput.value = "";
+      litrosInput.value = "";
+      precoLitroInput.value = "";
+      cardResultados.style.display = "none";
+    });
+
+    btnLimparHistorico.addEventListener("click", () => {
+      if (confirm("Tens a certeza que queres apagar todo o histórico?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        atualizarTabela();
+        cardResultados.style.display = "none";
+      }
+    });
+
+    atualizarTabela();
+  </script>
+
+</body>
+</html>
