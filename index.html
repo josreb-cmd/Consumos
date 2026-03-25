@@ -377,6 +377,8 @@
             navigator.serviceWorker.register("service-worker.js");
         }
     </script>
-
+window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("btnGuardar").addEventListener("click", guardarRegisto);
+});
 </body>
 </html>
