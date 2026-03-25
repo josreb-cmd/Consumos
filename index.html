@@ -189,7 +189,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
             getFirestore, collection, addDoc, enableIndexedDbPersistence,
-            query, where, orderBy, onSnapshot, deleteDoc, doc, updateDoc
+            query, orderBy, onSnapshot, deleteDoc, doc, updateDoc
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { 
             getAuth, signInAnonymously, onAuthStateChanged 
@@ -218,7 +218,6 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userId = user.uid;
-                carregarHistorico();
             }
         });
 
@@ -325,11 +324,9 @@
         };
 
         function carregarHistorico() {
-            if (!userId) return;
 
             const q = query(
                 collection(db, "registos"),
-                where("userId", "==", userId),
                 orderBy("createdAt", "desc")
             );
 
@@ -364,6 +361,8 @@
                 });
             });
         }
+
+        carregarHistorico();
 
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("service-worker.js");
