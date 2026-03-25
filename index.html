@@ -362,7 +362,9 @@
             });
         }
 
-        carregarHistorico();
+        window.addEventListener("DOMContentLoaded", () => {
+    carregarHistorico();
+});
 
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("service-worker.js");
