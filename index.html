@@ -224,59 +224,53 @@
 
         async function guardarRegisto() {
 
-    const data = document.getElementById("data").value;
-    const descricao = document.getElementById("descricao").value;
-    const km = Number(document.getElementById("km").value);
-    const litros = Number(document.getElementById("litros").value);
-    const precoLitro = Number(document.getElementById("precoLitro").value);
-    const moeda = document.getElementById("moeda").value;
+            const data = document.getElementById("data").value;
+            const descricao = document.getElementById("descricao").value;
+            const km = Number(document.getElementById("km").value);
+            const litros = Number(document.getElementById("litros").value);
+            const precoLitro = Number(document.getElementById("precoLitro").value);
+            const moeda = document.getElementById("moeda").value;
 
-    if (!data || !km || !litros || !precoLitro) {
-        document.getElementById("estadoGuardar").innerText =
-            "Preencha todos os campos obrigatórios.";
-        return;
-    }
+            if (!data || !km || !litros || !precoLitro) {
+                document.getElementById("estadoGuardar").innerText =
+                    "Preencha todos os campos obrigatórios.";
+                return;
+            }
 
-    const consumoMedio = (litros / km) * 100;
-    const custoTotal = litros * precoLitro;
+            const consumoMedio = (litros / km) * 100;
+            const custoTotal = litros * precoLitro;
 
-    const dados = {
-        data,
-        descricao,
-        km,
-        litros,
-        precoLitro,
-        moeda,
-        consumoMedio,
-        custoTotal,
-        userId: userId || "pendente",
-        updatedAt: new Date()
-    };
+            const dados = {
+                data,
+                descricao,
+                km,
+                litros,
+                precoLitro,
+                moeda,
+                consumoMedio,
+                custoTotal,
+                userId: userId || "pendente",
+                updatedAt: new Date()
+            };
 
-    if (registoEmEdicaoId) {
-        await updateDoc(doc(db, "registos", registoEmEdicaoId), dados);
-        document.getElementById("estadoGuardar").innerText =
-            "Registo atualizado com sucesso!";
-    } else {
-        await addDoc(collection(db, "registos"), {
-            ...dados,
-            createdAt: new Date()
-        });
-        document.getElementById("estadoGuardar").innerText =
-            "Guardado com sucesso!";
-    }
-
-    registoEmEdicaoId = null;
-    document.getElementById("modoEdicao").innerText = "";
-    limparFormulario();
-}
+            if (registoEmEdicaoId) {
+                await updateDoc(doc(db, "registos", registoEmEdicaoId), dados);
+                document.getElementById("estadoGuardar").innerText =
+                    "Registo atualizado com sucesso!";
+            } else {
+                await addDoc(collection(db, "registos"), {
+                    ...dados,
+                    createdAt: new Date()
+                });
+                document.getElementById("estadoGuardar").innerText =
+                    "Guardado com sucesso!";
+            }
 
             registoEmEdicaoId = null;
             document.getElementById("modoEdicao").innerText = "";
             limparFormulario();
         }
 
-        // LIGAR BOTÕES DIRETAMENTE (script está no fim do body)
         document.getElementById("btnGuardar").addEventListener("click", guardarRegisto);
 
         document.getElementById("btnCalcular").addEventListener("click", () => {
