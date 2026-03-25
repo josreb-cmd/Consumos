@@ -12,17 +12,18 @@
     <style>
         body { font-family: Arial; margin: 20px; }
         .secao { margin-top: 40px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        button { padding: 10px 20px; margin-top: 10px; }
+        button { padding: 10px 20px; margin-top: 10px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background: #f2f2f2; }
     </style>
 </head>
 
 <body>
 
-    <!-- AQUI ESTÁ O TEU HTML ORIGINAL (não alterei nada) -->
-    <!-- Apenas deixei espaço para a nova secção -->
-
     <h1>Consumos Automóvel</h1>
 
+    <!-- SECÇÃO CÁLCULO -->
     <div class="secao">
         <h2>Cálculo</h2>
 
@@ -52,34 +53,35 @@
         <div id="resultado"></div>
     </div>
 
-<div class="secao">
-    <h2>Histórico</h2>
+    <!-- SECÇÃO HISTÓRICO -->
+    <div class="secao">
+        <h2>Histórico</h2>
 
-    <button id="btnGuardar">Guardar no histórico</button>
-    <p id="estadoGuardar"></p>
+        <button id="btnGuardar">Guardar no histórico</button>
+        <p id="estadoGuardar"></p>
 
-    <br><br>
+        <table id="tabelaHistorico">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Kilómetros</th>
+                    <th>Litros</th>
+                    <th>Consumo (L/100km)</th>
+                    <th>Custo Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Registos aparecem aqui -->
+            </tbody>
+        </table>
+    </div>
 
-    <table id="tabelaHistorico" border="1" cellpadding="8" style="width:100%; border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Kilómetros</th>
-                <th>Litros</th>
-                <th>Consumo (L/100km)</th>
-                <th>Custo Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Registos serão inseridos aqui automaticamente -->
-        </tbody>
-    </table>
-</div>
     <!-- Firebase + Firestore -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
-            getFirestore, collection, addDoc, enableIndexedDbPersistence 
+            getFirestore, collection, addDoc, enableIndexedDbPersistence,
+            query, where, orderBy, onSnapshot
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { 
             getAuth, signInAnonymously, onAuthStateChanged 
@@ -104,11 +106,15 @@
 
         let userId = null;
 
+        // Autenticação
         onAuthStateChanged(auth, (user) => {
-            if (user) userId = user.uid;
+            if (user) {
+                userId = user.uid;
+                carregarHistorico();
+            }
         });
 
-        // 🔵 Função para guardar no Firestore
+        // Guardar registo
         async function guardarRegisto() {
             if (!userId) return;
 
@@ -119,10 +125,8 @@
             const precoLitro = Number(document.getElementById("precoLitro").value);
             const moeda = document.getElementById("moeda").value;
 
-            // Recalcular internamente
             const consumoMedio = (litros / km) * 100;
             const custoTotal = litros * precoLitro;
-            const custoPorKm = custoTotal / km;
 
             await addDoc(collection(db, "registos"), {
                 data,
@@ -133,7 +137,6 @@
                 moeda,
                 consumoMedio,
                 custoTotal,
-                custoPorKm,
                 userId,
                 createdAt: new Date()
             });
@@ -142,6 +145,38 @@
         }
 
         document.getElementById("btnGuardar").addEventListener("click", guardarRegisto);
+
+        // Carregar histórico
+        function carregarHistorico() {
+            if (!userId) return;
+
+            const q = query(
+                collection(db, "registos"),
+                where("userId", "==", userId),
+                orderBy("createdAt", "desc")
+            );
+
+            onSnapshot(q, (snapshot) => {
+                const tbody = document.querySelector("#tabelaHistorico tbody");
+                tbody.innerHTML = "";
+
+                snapshot.forEach((doc) => {
+                    const r = doc.data();
+
+                    const linha = `
+                        <tr>
+                            <td>${r.data || ""}</td>
+                            <td>${r.km}</td>
+                            <td>${r.litros}</td>
+                            <td>${r.consumoMedio.toFixed(2)}</td>
+                            <td>${r.custoTotal.toFixed(2)} ${r.moeda}</td>
+                        </tr>
+                    `;
+
+                    tbody.innerHTML += linha;
+                });
+            });
+        }
 
         // Service Worker
         if ("serviceWorker" in navigator) {
