@@ -52,13 +52,29 @@
         <div id="resultado"></div>
     </div>
 
-    <!-- 🔵 SECÇÃO HISTÓRICO (nova) -->
-    <div class="secao">
-        <h2>Histórico</h2>
-        <button id="btnGuardar">Guardar no histórico</button>
-        <p id="estadoGuardar"></p>
-    </div>
+<div class="secao">
+    <h2>Histórico</h2>
 
+    <button id="btnGuardar">Guardar no histórico</button>
+    <p id="estadoGuardar"></p>
+
+    <br><br>
+
+    <table id="tabelaHistorico" border="1" cellpadding="8" style="width:100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Kilómetros</th>
+                <th>Litros</th>
+                <th>Consumo (L/100km)</th>
+                <th>Custo Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Registos serão inseridos aqui automaticamente -->
+        </tbody>
+    </table>
+</div>
     <!-- Firebase + Firestore -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
