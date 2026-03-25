@@ -189,7 +189,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
             getFirestore, collection, addDoc, enableIndexedDbPersistence,
-            query, orderBy, onSnapshot, deleteDoc, doc, updateDoc
+            query, orderBy, onSnapshot, deleteDoc, doc, updateDoc,
+            serverTimestamp
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { 
             getAuth, signInAnonymously, onAuthStateChanged 
@@ -249,7 +250,7 @@
                 consumoMedio,
                 custoTotal,
                 userId: userId || "pendente",
-                updatedAt: new Date()
+                updatedAt: serverTimestamp()
             };
 
             if (registoEmEdicaoId) {
@@ -259,7 +260,7 @@
             } else {
                 await addDoc(collection(db, "registos"), {
                     ...dados,
-                    createdAt: new Date()
+                    createdAt: serverTimestamp()
                 });
                 document.getElementById("estadoGuardar").innerText =
                     "Guardado com sucesso!";
@@ -363,8 +364,8 @@
         }
 
         window.addEventListener("DOMContentLoaded", () => {
-    carregarHistorico();
-});
+            carregarHistorico();
+        });
 
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("service-worker.js");
