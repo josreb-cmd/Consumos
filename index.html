@@ -3,19 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consumos</title>
+    <title>Consumos Automóvel</title>
 
-    <!-- Manifest -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a3c57">
 
     <style>
-        body { font-family: Arial; margin: 20px; }
-        .secao { margin-top: 40px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        button { padding: 10px 20px; margin-top: 10px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-        th { background: #f2f2f2; }
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            color: #1a1a1a;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: #1a3c57;
+        }
+
+        .secao {
+            background: #ffffff;
+            padding: 25px;
+            margin: 25px auto;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .secao h2 {
+            margin-top: 0;
+            color: #1a3c57;
+            font-weight: 600;
+        }
+
+        label {
+            font-weight: 500;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
+
+        button {
+            background: #1a3c57;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 15px;
+            margin-top: 20px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #244b6e;
+        }
+
+        #estadoGuardar {
+            color: green;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            font-size: 14px;
+        }
+
+        th {
+            background: #1a3c57;
+            color: white;
+            padding: 10px;
+        }
+
+        td {
+            padding: 10px;
+            background: #ffffff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) td {
+            background: #f0f4f8;
+        }
     </style>
 </head>
 
@@ -28,25 +111,25 @@
         <h2>Cálculo</h2>
 
         <label>Data:</label>
-        <input type="date" id="data"><br><br>
+        <input type="date" id="data">
 
         <label>Descrição:</label>
-        <input type="text" id="descricao"><br><br>
+        <input type="text" id="descricao">
 
         <label>Kilómetros:</label>
-        <input type="number" id="km"><br><br>
+        <input type="number" id="km">
 
         <label>Litros:</label>
-        <input type="number" id="litros"><br><br>
+        <input type="number" id="litros">
 
         <label>Preço por litro:</label>
-        <input type="number" id="precoLitro" step="0.01"><br><br>
+        <input type="number" id="precoLitro" step="0.01">
 
         <label>Moeda:</label>
         <select id="moeda">
             <option value="EUR">EUR</option>
             <option value="USD">USD</option>
-        </select><br><br>
+        </select>
 
         <button id="btnCalcular">Calcular</button>
 
@@ -70,13 +153,11 @@
                     <th>Custo Total</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Registos aparecem aqui -->
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
 
-    <!-- Firebase + Firestore -->
+    <!-- FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
