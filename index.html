@@ -77,6 +77,12 @@
             font-weight: 500;
         }
 
+        #modoEdicao {
+            color: #f0ad4e;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -110,10 +116,6 @@
             margin-right: 4px;
         }
 
-        .btn-apagar:hover {
-            background: #cc0000;
-        }
-
         .btn-editar {
             background: #f0ad4e;
             color: white;
@@ -121,16 +123,6 @@
             padding: 6px 10px;
             border-radius: 4px;
             cursor: pointer;
-        }
-
-        .btn-editar:hover {
-            background: #ec971f;
-        }
-
-        #modoEdicao {
-            color: #f0ad4e;
-            font-weight: 600;
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -221,9 +213,9 @@
         signInAnonymously(auth);
 
         let userId = null;
-        let registoEmEdicaoId = null; // se tiver valor, estamos a editar
+        let registoEmEdicaoId = null;
 
-        // Autenticação
+        // Autenticação Firebase
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userId = user.uid;
@@ -233,7 +225,12 @@
 
         // Guardar ou atualizar registo
         async function guardarRegisto() {
-            if (!userId) return;
+
+            if (!userId) {
+                document.getElementById("estadoGuardar").innerText =
+                    "Aguarde... a ligar ao servidor.";
+                return;
+            }
 
             const data = document.getElementById("data").value;
             const descricao = document.getElementById("descricao").value;
@@ -243,7 +240,8 @@
             const moeda = document.getElementById("moeda").value;
 
             if (!data || !km || !litros || !precoLitro) {
-                document.getElementById("estadoGuardar").innerText = "Preencha todos os campos obrigatórios.";
+                document.getElementById("estadoGuardar").innerText =
+                    "Preencha todos os campos obrigatórios.";
                 return;
             }
 
@@ -264,27 +262,30 @@
             };
 
             if (registoEmEdicaoId) {
-                // Atualizar registo existente
                 await updateDoc(doc(db, "registos", registoEmEdicaoId), dados);
-                document.getElementById("estadoGuardar").innerText = "Registo atualizado com sucesso!";
+                document.getElementById("estadoGuardar").innerText =
+                    "Registo atualizado com sucesso!";
             } else {
-                // Criar novo registo
                 await addDoc(collection(db, "registos"), {
                     ...dados,
                     createdAt: new Date()
                 });
-                document.getElementById("estadoGuardar").innerText = "Guardado com sucesso!";
+                document.getElementById("estadoGuardar").innerText =
+                    "Guardado com sucesso!";
             }
 
-            // Limpar modo edição
             registoEmEdicaoId = null;
             document.getElementById("modoEdicao").innerText = "";
             limparFormulario();
         }
 
-        document.getElementById("btnGuardar").addEventListener("click", guardarRegisto);
+        // Listener do botão Guardar (carregado no momento certo)
+        window.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("btnGuardar")
+                .addEventListener("click", guardarRegisto);
+        });
 
-        // Opcional: botão Calcular (se quiseres mostrar resultado no ecrã)
+        // Botão Calcular
         document.getElementById("btnCalcular").addEventListener("click", () => {
             const km = Number(document.getElementById("km").value);
             const litros = Number(document.getElementById("litros").value);
@@ -292,7 +293,8 @@
             const moeda = document.getElementById("moeda").value;
 
             if (!km || !litros || !precoLitro) {
-                document.getElementById("resultado").innerText = "Preencha km, litros e preço por litro.";
+                document.getElementById("resultado").innerText =
+                    "Preencha km, litros e preço por litro.";
                 return;
             }
 
@@ -333,7 +335,8 @@
             document.getElementById("precoLitro").value = dados.precoLitro || "";
             document.getElementById("moeda").value = dados.moeda || "EUR";
 
-            document.getElementById("modoEdicao").innerText = "Modo edição: a atualizar registo existente.";
+            document.getElementById("modoEdicao").innerText =
+                "Modo edição: a atualizar registo existente.";
         };
 
         // Carregar histórico
@@ -361,8 +364,14 @@
                             <td>${r.consumoMedio.toFixed(2)}</td>
                             <td>${r.custoTotal.toFixed(2)} ${r.moeda}</td>
                             <td>
-                                <button class="btn-editar" onclick='editarRegisto("${docSnap.id}", ${JSON.stringify(r).replace(/"/g, "&quot;")})'>Editar</button>
-                                <button class="btn-apagar" onclick="apagarRegisto('${docSnap.id}')">Apagar</button>
+                                <button class="btn-editar"
+                                    onclick='editarRegisto("${docSnap.id}", ${JSON.stringify(r).replace(/"/g, "&quot;")})'>
+                                    Editar
+                                </button>
+                                <button class="btn-apagar"
+                                    onclick="apagarRegisto('${docSnap.id}')">
+                                    Apagar
+                                </button>
                             </td>
                         </tr>
                     `;
@@ -377,8 +386,6 @@
             navigator.serviceWorker.register("service-worker.js");
         }
     </script>
-window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("btnGuardar").addEventListener("click", guardarRegisto);
-});
+
 </body>
 </html>
