@@ -215,7 +215,6 @@
         let userId = null;
         let registoEmEdicaoId = null;
 
-        // Autenticação Firebase
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userId = user.uid;
@@ -223,9 +222,7 @@
             }
         });
 
-        // Guardar ou atualizar registo
         async function guardarRegisto() {
-
             if (!userId) {
                 document.getElementById("estadoGuardar").innerText =
                     "Aguarde... a ligar ao servidor.";
@@ -279,13 +276,9 @@
             limparFormulario();
         }
 
-        // Listener do botão Guardar (carregado no momento certo)
-        window.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("btnGuardar")
-                .addEventListener("click", guardarRegisto);
-        });
+        // LIGAR BOTÕES DIRETAMENTE (script está no fim do body)
+        document.getElementById("btnGuardar").addEventListener("click", guardarRegisto);
 
-        // Botão Calcular
         document.getElementById("btnCalcular").addEventListener("click", () => {
             const km = Number(document.getElementById("km").value);
             const litros = Number(document.getElementById("litros").value);
@@ -316,7 +309,6 @@
             document.getElementById("precoLitro").value = "";
         }
 
-        // Apagar registo
         window.apagarRegisto = async function(id) {
             const confirmar = confirm("Tem a certeza que deseja apagar este registo?");
             if (!confirmar) return;
@@ -324,7 +316,6 @@
             await deleteDoc(doc(db, "registos", id));
         };
 
-        // Editar registo
         window.editarRegisto = function(id, dados) {
             registoEmEdicaoId = id;
 
@@ -339,7 +330,6 @@
                 "Modo edição: a atualizar registo existente.";
         };
 
-        // Carregar histórico
         function carregarHistorico() {
             if (!userId) return;
 
@@ -381,7 +371,6 @@
             });
         }
 
-        // Service Worker
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("service-worker.js");
         }
